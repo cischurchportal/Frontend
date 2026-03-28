@@ -146,8 +146,8 @@ function DeveloperManager() {
       const data = await response.json()
       
       if (data.success) {
-        setEditForm({ ...editForm, image: data.file_path })
-        setMessage('Image uploaded successfully!')
+        setEditForm({ ...editForm, image: data.file_url })  // Changed from file_path to file_url
+        setMessage('Image uploaded successfully to R2!')
         setMessageType('success')
         setTimeout(() => setMessage(''), 3000)
       } else {

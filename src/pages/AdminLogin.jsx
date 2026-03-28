@@ -39,7 +39,10 @@ function AdminLogin() {
           navigate('/admin/dashboard')
         }, 1000)
       } else {
-        setMessage(data.detail || 'Login failed. Please check your credentials.')
+        const errMsg = typeof data.detail === 'object'
+          ? data.detail?.message || 'Login failed. Please check your credentials.'
+          : data.detail || 'Login failed. Please check your credentials.'
+        setMessage(errMsg)
         setMessageType('error')
       }
     } catch (error) {

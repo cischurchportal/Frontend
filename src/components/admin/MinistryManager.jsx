@@ -99,8 +99,8 @@ function MinistryManager() {
       const data = await response.json()
       
       if (data.success) {
-        setEditForm({ ...editForm, image: data.file_path })
-        setMessage('Image uploaded successfully! Remember to click "Save Changes" to persist.')
+        setEditForm({ ...editForm, image: data.file_url })  // Changed from file_path to file_url
+        setMessage('Image uploaded successfully to R2! Remember to click "Save Changes" to persist.')
         setMessageType('success')
         setTimeout(() => setMessage(''), 5000)
       } else {

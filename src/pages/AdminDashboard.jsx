@@ -540,9 +540,9 @@ function OverviewTab() {
         }}>
           {[
             { label: 'Database', value: 'JSON Files (Development)', icon: '💾' },
-            { label: 'Storage', value: 'Local BLOB Storage', icon: '📁' },
+            { label: 'Storage', value: 'Cloudflare R2 (Cloud)', icon: '☁️' },
             { label: 'Last Updated', value: new Date().toLocaleDateString(), icon: '📅' },
-            { label: 'Version', value: '2.0.0', icon: '🔖' }
+            { label: 'Version', value: '2.1.0', icon: '🔖' }
           ].map((item, index) => (
             <div
               key={item.label}

@@ -96,9 +96,9 @@ function AboutPageManager() {
         while (newImages.length <= index) {
           newImages.push('')
         }
-        newImages[index] = data.file_path
+        newImages[index] = data.file_url  // Changed from file_path to file_url
         setAboutData({ ...aboutData, images: newImages })
-        setMessage('Image uploaded successfully! Remember to click "Save Changes" to persist.')
+        setMessage('Image uploaded successfully to R2! Remember to click "Save Changes" to persist.')
         setMessageType('success')
         setTimeout(() => setMessage(''), 5000)
       } else {

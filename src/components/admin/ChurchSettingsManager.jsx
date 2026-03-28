@@ -48,7 +48,7 @@ function ChurchSettingsManager() {
 
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json()
-          updatedSettings.diocese_logo = uploadData.file_path
+          updatedSettings.diocese_logo = uploadData.file_url  // Changed from file_path to file_url
         }
       }
 
@@ -65,7 +65,7 @@ function ChurchSettingsManager() {
 
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json()
-          updatedSettings.church_logo = uploadData.file_path
+          updatedSettings.church_logo = uploadData.file_url  // Changed from file_path to file_url
         }
       }
 

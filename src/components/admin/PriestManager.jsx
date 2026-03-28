@@ -59,7 +59,7 @@ function PriestManager() {
 
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json()
-          imagePath = uploadData.file_path
+          imagePath = uploadData.file_url  // Changed from file_path to file_url
         } else {
           setMessage('Error uploading image')
           return
