@@ -88,24 +88,24 @@ function DevelopersModal({ isOpen, onClose }) {
         <div style={{
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           color: 'white',
-          padding: '40px',
+          padding: 'clamp(24px, 5vw, 40px)',
           borderRadius: '20px 20px 0 0',
           textAlign: 'center'
         }}>
           <h2 style={{ 
-            fontSize: '2.5rem', 
+            fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', 
             marginBottom: '10px',
             fontWeight: 'bold'
           }}>
             Meet Our Team
           </h2>
-          <p style={{ fontSize: '1.1rem', opacity: 0.9 }}>
+          <p style={{ fontSize: '1rem', opacity: 0.9 }}>
             The Youth Boys Behind This Project
           </p>
         </div>
 
         {/* Developers Grid */}
-        <div style={{ padding: '40px' }}>
+        <div style={{ padding: 'clamp(20px, 5vw, 40px)' }}>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '40px' }}>
               <div style={{
@@ -121,8 +121,8 @@ function DevelopersModal({ isOpen, onClose }) {
           ) : (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '30px'
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
+              gap: '20px'
             }}>
               {developers.map((dev) => (
                 <div
@@ -144,12 +144,12 @@ function DevelopersModal({ isOpen, onClose }) {
                   }}
                 >
                   <div style={{
-                    width: '150px',
-                    height: '150px',
+                    width: 'min(130px, 50vw)',
+                    height: 'min(130px, 50vw)',
                     borderRadius: '50%',
                     overflow: 'hidden',
-                    margin: '0 auto 20px',
-                    border: '5px solid #667eea',
+                    margin: '0 auto 16px',
+                    border: '4px solid #667eea',
                     boxShadow: '0 5px 15px rgba(102, 126, 234, 0.3)'
                   }}>
                     <img

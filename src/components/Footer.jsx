@@ -31,8 +31,8 @@ function Footer() {
     <footer style={{
       background: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
       color: 'white',
-      padding: '60px 20px 30px',
-      marginTop: '80px',
+      padding: 'clamp(40px, 6vw, 60px) 20px 30px',
+      marginTop: '60px',
       position: 'relative',
       overflow: 'hidden'
     }}>
@@ -67,8 +67,8 @@ function Footer() {
         {/* Main Footer Content */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '40px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
+          gap: '30px',
           marginBottom: '40px'
         }}>
           {footerSections.map((section, index) => (
@@ -111,7 +111,7 @@ function Footer() {
                 opacity: 0.9,
                 lineHeight: '1.6',
                 fontSize: '0.95rem',
-                paddingLeft: '50px'
+                paddingLeft: '0'
               }}>
                 {section.content}
               </p>
@@ -155,36 +155,64 @@ function Footer() {
             </div>
             <div style={{ 
               display: 'flex', 
-              gap: '15px',
-              paddingLeft: '50px'
+              gap: '12px',
+              paddingLeft: '0'
             }}>
               <a 
                 href="#" 
                 style={{ 
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
                   color: 'white',
-                  fontSize: '2rem',
                   textDecoration: 'none',
-                  transition: 'transform 0.3s ease',
-                  display: 'inline-block'
+                  background: 'rgba(255,255,255,0.12)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '20px',
+                  padding: '7px 14px',
+                  fontSize: '0.85rem',
+                  fontWeight: '600',
+                  transition: 'all 0.25s ease'
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px) scale(1.1)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0) scale(1)'}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.22)'
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.12)'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                }}
               >
-                📘
+                <span>📘</span>
+                <span>Facebook</span>
               </a>
               <a 
                 href="#" 
                 style={{ 
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
                   color: 'white',
-                  fontSize: '2rem',
                   textDecoration: 'none',
-                  transition: 'transform 0.3s ease',
-                  display: 'inline-block'
+                  background: 'rgba(255,255,255,0.12)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '20px',
+                  padding: '7px 14px',
+                  fontSize: '0.85rem',
+                  fontWeight: '600',
+                  transition: 'all 0.25s ease'
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px) scale(1.1)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0) scale(1)'}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.22)'
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.12)'
+                  e.currentTarget.style.transform = 'translateY(0)'
+                }}
               >
-                📺
+                <span>📺</span>
+                <span>YouTube</span>
               </a>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
@@ -8,6 +8,13 @@ import { useAppContext } from '../context/AppContext'
 function Contact() {
   const { churchSettings, loading } = useAppContext()
   const [error, setError] = useState('')
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   if (loading) {
     return <Loader fullScreen message="Loading contact information..." />
@@ -92,26 +99,14 @@ function Contact() {
       <div style={{
         background: 'linear-gradient(135deg, #00a8e8 0%, #0077b6 100%)',
         color: 'white',
-        padding: '12px 0',
-        fontSize: '0.9rem',
+        padding: '10px 0',
+        fontSize: '0.85rem',
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
-        <div className="container" style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '15px'
-        }}>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px',
-            fontWeight: '600',
-            letterSpacing: '0.5px'
-          }}>
-            <span style={{ fontSize: '1.2rem' }}>✝️</span>
-            <span>DEAR BELOVED, WELCOME TO GOD'S HOUSE!</span>
+        <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '600' }}>
+            <span>✝️</span>
+            <span>{isMobile ? "WELCOME TO GOD'S HOUSE!" : "DEAR BELOVED, WELCOME TO GOD'S HOUSE!"}</span>
           </div>
         </div>
       </div>
@@ -121,60 +116,34 @@ function Contact() {
       {/* Hero Section */}
       <div style={{
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        padding: '80px 0',
+        padding: isMobile ? '50px 0' : '80px 0',
         position: 'relative',
         overflow: 'hidden'
       }}>
-        <div style={{
-          position: 'absolute',
-          top: '-100px',
-          right: '-100px',
-          width: '300px',
-          height: '300px',
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: '50%',
-          animation: 'float 6s ease-in-out infinite'
-        }} />
-        
+        <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%', animation: 'float 6s ease-in-out infinite' }} />
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <div className="fade-in-up" style={{
-            textAlign: 'center',
-            color: 'white'
-          }}>
-            <div style={{ 
-              fontSize: '4rem', 
-              marginBottom: '20px',
-              animation: 'scaleIn 0.8s ease forwards'
-            }}>
-              📞
-            </div>
+          <div className="fade-in-up" style={{ textAlign: 'center', color: 'white' }}>
+            <div style={{ fontSize: isMobile ? '2.5rem' : '4rem', marginBottom: '15px' }}>📞</div>
             <h1 style={{ 
-              fontSize: '3.5rem',
+              fontSize: isMobile ? '2rem' : '3.5rem',
               fontWeight: '800',
-              marginBottom: '15px',
+              marginBottom: '10px',
               textShadow: '0 4px 12px rgba(0,0,0,0.3)',
-              letterSpacing: '1px'
+              padding: isMobile ? '0 10px' : '0'
             }}>
               Contact Us
             </h1>
             <p style={{ 
-              fontSize: '1.3rem',
+              fontSize: isMobile ? '1rem' : '1.3rem',
               opacity: 0.95,
               fontWeight: '500',
-              textShadow: '0 2px 8px rgba(0,0,0,0.2)',
               maxWidth: '700px',
-              margin: '0 auto 20px'
+              margin: '0 auto 15px',
+              padding: isMobile ? '0 15px' : '0'
             }}>
               We'd love to hear from you
             </p>
-            <div style={{ 
-              display: 'flex', 
-              gap: '12px', 
-              fontSize: '1.1rem',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: '20px'
-            }}>
+            <div style={{ display: 'flex', gap: '12px', fontSize: '1rem', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ opacity: 0.9 }}>HOME</span>
               <span style={{ fontSize: '1.5rem' }}>›</span>
               <span style={{ fontWeight: 'bold' }}>CONTACT</span>
@@ -184,12 +153,12 @@ function Contact() {
       </div>
 
       {/* Contact Information Section */}
-      <div className="container" style={{ padding: '80px 20px' }}>
+      <div className="container" style={{ padding: isMobile ? '30px 15px' : '80px 20px' }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '30px',
-          marginBottom: '80px'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
+          gap: '20px',
+          marginBottom: '50px'
         }}>
           {contactCards.map((card, index) => (
             <div
@@ -217,15 +186,15 @@ function Contact() {
               }} />
               
               <div style={{
-                width: '80px',
-                height: '80px',
+                width: '76px',
+                height: '76px',
                 background: card.color,
-                borderRadius: '20px',
+                borderRadius: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 25px',
-                fontSize: '2.5rem',
+                margin: '0 auto 22px',
+                fontSize: '2.2rem',
                 boxShadow: `0 8px 24px ${card.color}40`,
                 position: 'relative',
                 zIndex: 1
@@ -265,7 +234,7 @@ function Contact() {
           boxShadow: '0 12px 48px rgba(0,0,0,0.12)'
         }}>
           <div style={{
-            padding: '40px',
+            padding: 'clamp(24px, 4vw, 40px)',
             textAlign: 'center',
             background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)'
           }}>
@@ -289,7 +258,7 @@ function Contact() {
                 🗺️
               </div>
               <h2 style={{
-                fontSize: '2rem',
+                fontSize: 'clamp(1.4rem, 4vw, 2rem)',
                 fontWeight: '800',
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 WebkitBackgroundClip: 'text',
@@ -312,7 +281,7 @@ function Contact() {
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3945.8!2d78.1!3d8.8!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOMKwNDgnMDAuMCJOIDc4wrAwNicwMC4wIkU!5e0!3m2!1sen!2sin!4v1234567890"
             width="100%"
-            height="500"
+            height={isMobile ? '300' : '500'}
             style={{ border: 0, display: 'block' }}
             allowFullScreen=""
             loading="lazy"

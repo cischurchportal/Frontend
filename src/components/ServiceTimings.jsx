@@ -50,7 +50,7 @@ function ServiceTimings({ services }) {
     <section style={{
       backgroundColor: 'white',
       borderRadius: '24px',
-      padding: '50px',
+      padding: 'clamp(24px, 4vw, 50px)',
       boxShadow: '0 12px 48px rgba(0,0,0,0.1)',
       position: 'relative',
       overflow: 'hidden'
@@ -72,28 +72,31 @@ function ServiceTimings({ services }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '20px',
-        marginBottom: '50px',
+        gap: '15px',
+        marginBottom: '40px',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        flexWrap: 'wrap',
+        textAlign: 'center'
       }}>
         <div style={{
-          width: '70px',
-          height: '70px',
+          width: '60px',
+          height: '60px',
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           borderRadius: '18px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '2.5rem',
+          fontSize: '2rem',
           boxShadow: '0 12px 32px rgba(102, 126, 234, 0.3)',
-          animation: 'pulse 2s ease-in-out infinite'
+          animation: 'pulse 2s ease-in-out infinite',
+          flexShrink: 0
         }}>
           🕐
         </div>
         <div>
           <h2 style={{ 
-            fontSize: '2.5rem',
+            fontSize: 'clamp(1.6rem, 4vw, 2.5rem)',
             fontWeight: '900',
             color: '#2c3e50',
             margin: 0,
@@ -104,7 +107,7 @@ function ServiceTimings({ services }) {
           <p style={{
             margin: 0,
             color: '#999',
-            fontSize: '1.05rem',
+            fontSize: '1rem',
             fontWeight: '600'
           }}>
             Join us in worship and fellowship
@@ -114,8 +117,8 @@ function ServiceTimings({ services }) {
       
       <div style={{ 
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))',
-        gap: '25px',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))',
+        gap: '20px',
         position: 'relative',
         zIndex: 1
       }}>
@@ -138,19 +141,19 @@ function ServiceTimings({ services }) {
               <div style={{
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 color: 'white',
-                padding: '18px 25px',
-                fontWeight: '800',
-                fontSize: '1.3rem',
+                padding: '15px 22px',
+                fontWeight: '700',
+                fontSize: '1.05rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
-                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.2)'
+                gap: '10px',
+                letterSpacing: '0.3px'
               }}>
-                <span style={{ fontSize: '1.5rem' }}>📅</span>
+                <span style={{ fontSize: '1.2rem' }}>📅</span>
                 <span>{day}</span>
               </div>
               
-              <div style={{ padding: '25px' }}>
+              <div style={{ padding: 'clamp(16px, 3vw, 25px)' }}>
                 {groupedServices[day].map((service, index) => (
                   <div 
                     key={service.id} 

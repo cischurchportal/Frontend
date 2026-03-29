@@ -75,7 +75,7 @@ body {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
   transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  transition: width 0.4s, height 0.4s;
 }
 
 .btn:hover::before {
@@ -102,7 +102,7 @@ body {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -205,7 +205,7 @@ body {
 }
 
 .card-hover:hover {
-  transform: translateY(-8px);
+  transform: translateY(-5px);
   box-shadow: var(--shadow-xl);
 }
 
@@ -274,4 +274,64 @@ textarea,
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ===== Responsive Utilities ===== */
+
+/* Prevent horizontal overflow globally */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Responsive images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive iframes */
+iframe {
+  max-width: 100%;
+}
+
+/* Mobile container padding */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .btn {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Tablet adjustments */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .container {
+    padding: 0 20px;
+  }
+}
+
+/* Admin dashboard mobile tab scroll */
+@media (max-width: 900px) {
+  .admin-tabs-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .admin-tabs-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Anchor scroll offset for sticky header */
+[id] {
+  scroll-margin-top: 80px;
+}
+
+/* Smooth page transitions */
+.App {
+  animation: fadeIn 0.25s ease;
 }

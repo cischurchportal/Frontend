@@ -94,14 +94,22 @@ function TodayCelebrations({ celebrations }) {
           {celebrations.map((celebration, index) => (
             <div 
               key={celebration.id} 
-              className="card-hover"
               style={{
                 border: `2px solid ${getCelebrationColor(celebration.celebration_type)}`,
                 borderRadius: '14px',
-                padding: '18px',
+                padding: '16px',
                 background: `linear-gradient(135deg, ${getCelebrationColor(celebration.celebration_type)}05 0%, ${getCelebrationColor(celebration.celebration_type)}10 100%)`,
                 animation: `fadeInUp 0.5s ease forwards ${index * 0.1}s`,
-                opacity: 0
+                opacity: 0,
+                transition: 'transform 0.25s ease, box-shadow 0.25s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.boxShadow = `0 6px 18px ${getCelebrationColor(celebration.celebration_type)}25`
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.boxShadow = 'none'
               }}
             >
               <div style={{

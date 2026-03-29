@@ -13,18 +13,20 @@ function ErrorPopup({ message, onClose, type = 'error' }) {
   return (
     <div style={{
       position: 'fixed',
-      top: '20px',
-      right: '20px',
+      top: '16px',
+      right: '16px',
+      left: '16px',
       maxWidth: '400px',
+      marginLeft: 'auto',
       backgroundColor: color.bg,
       color: color.text,
-      padding: '15px 20px',
-      borderRadius: '8px',
+      padding: '14px 18px',
+      borderRadius: '10px',
       border: `1px solid ${color.border}`,
-      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
       zIndex: 10000,
       display: 'flex',
-      alignItems: 'start',
+      alignItems: 'flex-start',
       gap: '10px',
       animation: 'slideIn 0.3s ease-out'
     }}>
