@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import ErrorPopup from '../ErrorPopup'
 import Loader from '../Loader'
+import { compressImage } from '../../utils/compressImage'
 
 function AboutPageManager() {
   const [aboutData, setAboutData] = useState(null)
@@ -9,6 +10,8 @@ function AboutPageManager() {
   const [messageType, setMessageType] = useState('success')
   const [editMode, setEditMode] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState('')
 
   useEffect(() => {
     fetchAboutData()
@@ -76,29 +79,24 @@ function AboutPageManager() {
     const file = e.target.files[0]
     if (!file) return
 
-    const formData = new FormData()
-    formData.append('file', file)
-
-    setMessage('Uploading image...')
-    setMessageType('info')
+    setUploading(true)
+    setUploadStatus('Compressing image...')
 
     try {
-      const response = await fetch('/api/upload/', {
-        method: 'POST',
-        body: formData
-      })
-      
+      const compressed = await compressImage(file)
+      setUploadStatus('Uploading...')
+      const formData = new FormData()
+      formData.append('file', compressed)
+
+      const response = await fetch('/api/upload/', { method: 'POST', body: formData })
       const data = await response.json()
-      
+
       if (data.success) {
         const newImages = [...(aboutData.images || [])]
-        // Ensure array has enough slots
-        while (newImages.length <= index) {
-          newImages.push('')
-        }
-        newImages[index] = data.file_url  // Changed from file_path to file_url
-        setAboutData({ ...aboutData, images: newImages })
-        setMessage('Image uploaded successfully to R2! Remember to click "Save Changes" to persist.')
+        while (newImages.length <= index) newImages.push('')
+        newImages[index] = data.file_url
+        setAboutData(prev => ({ ...prev, images: newImages }))
+        setMessage('Image uploaded! Click "Save Changes" to persist.')
         setMessageType('success')
         setTimeout(() => setMessage(''), 5000)
       } else {
@@ -106,9 +104,11 @@ function AboutPageManager() {
         setMessageType('error')
       }
     } catch (error) {
-      console.error('Upload error:', error)
       setMessage('Error uploading image: ' + error.message)
       setMessageType('error')
+    } finally {
+      setUploading(false)
+      setUploadStatus('')
     }
   }
 
@@ -134,18 +134,6 @@ function AboutPageManager() {
           {editMode ? 'Cancel' : 'Edit'}
         </button>
       </div>
-
-      {message && (
-        <div style={{
-          padding: '10px',
-          marginBottom: '20px',
-          borderRadius: '5px',
-          backgroundColor: message.includes('success') ? '#d4edda' : '#f8d7da',
-          color: message.includes('success') ? '#155724' : '#721c24'
-        }}>
-          {message}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '20px' }}>
@@ -214,24 +202,26 @@ function AboutPageManager() {
                       }}
                     />
                     {editMode && (
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload(e, index)}
-                        style={{ fontSize: '0.9rem' }}
-                      />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, index)} disabled={uploading} style={{ fontSize: '0.9rem' }} />
+                        {uploading && <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#667eea', fontSize: '0.85rem' }}>
+                          <span style={{ width: '14px', height: '14px', border: '2px solid #ddd', borderTop: '2px solid #667eea', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
+                          {uploadStatus}
+                        </span>}
+                      </div>
                     )}
                   </div>
                 ) : (
                   editMode && (
                     <div>
                       <p style={{ color: '#999', marginBottom: '10px' }}>No image</p>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload(e, index)}
-                        style={{ fontSize: '0.9rem' }}
-                      />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, index)} disabled={uploading} style={{ fontSize: '0.9rem' }} />
+                        {uploading && <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#667eea', fontSize: '0.85rem' }}>
+                          <span style={{ width: '14px', height: '14px', border: '2px solid #ddd', borderTop: '2px solid #667eea', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
+                          {uploadStatus}
+                        </span>}
+                      </div>
                     </div>
                   )
                 )}
@@ -241,12 +231,9 @@ function AboutPageManager() {
         </div>
 
         {editMode && (
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={saving}
-            style={{ opacity: saving ? 0.7 : 1 }}
-          >
+          <button type="submit" className="btn btn-primary" disabled={saving || uploading}
+            style={{ opacity: saving || uploading ? 0.7 : 1, display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            {saving && <span style={{ width: '14px', height: '14px', border: '2px solid rgba(255,255,255,0.4)', borderTop: '2px solid white', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />}
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
         )}

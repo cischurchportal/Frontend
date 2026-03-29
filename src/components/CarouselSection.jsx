@@ -1,48 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import MediaModal from './MediaModal'
 
-function CarouselSection() {
-  const [carousels, setCarousels] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [selectedMedia, setSelectedMedia] = useState(null)
+function CarouselSection({ carousels = [] }) {
+  const [selectedIndex, setSelectedIndex] = useState(null)
+  const [mediaList, setMediaList] = useState([])
 
-  useEffect(() => {
-    fetchCarousels()
-  }, [])
-
-  const fetchCarousels = async () => {
-    try {
-      const response = await fetch('/api/carousels/')
-      const data = await response.json()
-      if (data.success) {
-        setCarousels(data.data.carousels)
-      }
-    } catch (error) {
-      console.error('Error fetching carousels:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleMediaClick = (media) => {
-    setSelectedMedia(media)
+  const handleMediaClick = (media, list) => {
+    const idx = list.findIndex(m => m.id === media.id)
+    setMediaList(list)
+    setSelectedIndex(idx >= 0 ? idx : 0)
   }
 
   const closeModal = () => {
-    setSelectedMedia(null)
+    setSelectedIndex(null)
+    setMediaList([])
   }
 
-  if (loading) {
-    return (
-      <section style={{ marginTop: '40px', textAlign: 'center' }}>
-        <div>Loading carousels...</div>
-      </section>
-    )
-  }
-
-  if (!carousels || carousels.length === 0) {
-    return null
-  }
+  if (!carousels || carousels.length === 0) return null
 
   return (
     <>
@@ -99,13 +73,9 @@ function CarouselSection() {
                       transition: 'transform 0.3s ease',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                     }}
-                    onClick={() => handleMediaClick(media)}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.05)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)'
-                    }}
+                    onClick={() => handleMediaClick(media, carousel.media)}
+                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
                   >
                     {media.media_type === 'image' ? (
                       <img 
@@ -117,44 +87,40 @@ function CarouselSection() {
                           objectFit: 'cover'
                         }}
                       />
-                    ) : (
-                      <div style={{
-                        width: '100%',
-                        height: '150px',
-                        backgroundColor: '#f0f0f0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        position: 'relative'
-                      }}>
-                        <video 
-                          src={media.file_path}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover'
-                          }}
-                          muted
-                        />
+                    ) : (() => {
+                      const videoId = media.file_path.split('/embed/')[1]
+                      return (
                         <div style={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          backgroundColor: 'rgba(0,0,0,0.7)',
-                          borderRadius: '50%',
-                          width: '50px',
-                          height: '50px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'white',
-                          fontSize: '1.5rem'
+                          width: '100%',
+                          height: '150px',
+                          position: 'relative',
+                          backgroundColor: '#000'
                         }}>
-                          ▶️
+                          <img
+                            src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+                            alt={media.title}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                          <div style={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            backgroundColor: 'rgba(255,0,0,0.9)',
+                            borderRadius: '50%',
+                            width: '50px',
+                            height: '50px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontSize: '1.2rem'
+                          }}>
+                            ▶
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )
+                    })()}
                     
                     {/* Media Info Overlay */}
                     <div style={{
@@ -203,10 +169,12 @@ function CarouselSection() {
       </section>
 
       {/* Media Modal */}
-      {selectedMedia && (
-        <MediaModal 
-          media={selectedMedia} 
-          onClose={closeModal} 
+      {selectedIndex !== null && mediaList.length > 0 && (
+        <MediaModal
+          media={mediaList[selectedIndex]}
+          mediaList={mediaList}
+          onClose={closeModal}
+          onNavigate={setSelectedIndex}
         />
       )}
     </>

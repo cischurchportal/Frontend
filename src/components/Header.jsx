@@ -1,33 +1,17 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { useAppContext } from '../context/AppContext'
 
 function Header() {
   const location = useLocation()
-  const [churchSettings, setChurchSettings] = useState(null)
+  const { churchSettings } = useAppContext()
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
-    fetchChurchSettings()
-    
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-    
+    const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
-  const fetchChurchSettings = async () => {
-    try {
-      const response = await fetch('/api/church/home')
-      const data = await response.json()
-      if (data.success) {
-        setChurchSettings(data.data.church_settings)
-      }
-    } catch (error) {
-      console.error('Error fetching church settings:', error)
-    }
-  }
 
   const navItems = [
     { path: '/', label: 'Home', icon: '🏠' },

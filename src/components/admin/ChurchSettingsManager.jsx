@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { compressImage } from '../../utils/compressImage'
 
 function ChurchSettingsManager() {
   const [settings, setSettings] = useState(null)
@@ -7,6 +8,7 @@ function ChurchSettingsManager() {
   const [message, setMessage] = useState('')
   const [dioceseLogoFile, setDioceseLogoFile] = useState(null)
   const [churchLogoFile, setChurchLogoFile] = useState(null)
+  const [uploadStatus, setUploadStatus] = useState('')
 
   useEffect(() => {
     fetchSettings()
@@ -37,37 +39,33 @@ function ChurchSettingsManager() {
 
       // Upload diocese logo if selected
       if (dioceseLogoFile) {
+        setUploadStatus('Compressing diocese logo...')
+        const compressed = await compressImage(dioceseLogoFile)
+        setUploadStatus('Uploading diocese logo...')
         const logoFormData = new FormData()
-        logoFormData.append('file', dioceseLogoFile)
-        logoFormData.append('logo_type', 'diocese')
-
-        const uploadResponse = await fetch('/api/upload/church-logo', {
-          method: 'POST',
-          body: logoFormData
-        })
-
+        logoFormData.append('file', compressed)
+        const uploadResponse = await fetch('/api/upload/', { method: 'POST', body: logoFormData })
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json()
-          updatedSettings.diocese_logo = uploadData.file_url  // Changed from file_path to file_url
+          updatedSettings.diocese_logo = uploadData.file_url
         }
       }
 
       // Upload church logo if selected
       if (churchLogoFile) {
+        setUploadStatus('Compressing church logo...')
+        const compressed = await compressImage(churchLogoFile)
+        setUploadStatus('Uploading church logo...')
         const logoFormData = new FormData()
-        logoFormData.append('file', churchLogoFile)
-        logoFormData.append('logo_type', 'church')
-
-        const uploadResponse = await fetch('/api/upload/church-logo', {
-          method: 'POST',
-          body: logoFormData
-        })
-
+        logoFormData.append('file', compressed)
+        const uploadResponse = await fetch('/api/upload/', { method: 'POST', body: logoFormData })
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json()
-          updatedSettings.church_logo = uploadData.file_url  // Changed from file_path to file_url
+          updatedSettings.church_logo = uploadData.file_url
         }
       }
+
+      setUploadStatus('')
 
       const response = await fetch('/api/church/settings', {
         method: 'PUT',
@@ -358,18 +356,11 @@ function ChurchSettingsManager() {
 
           {/* Submit Button */}
           <div style={{ marginTop: '20px' }}>
-            <button
-              type="submit"
-              disabled={saving}
-              className="btn btn-primary"
-              style={{
-                padding: '12px 30px',
-                fontSize: '16px',
-                opacity: saving ? 0.7 : 1
-              }}
-            >
-              {saving ? 'Saving...' : 'Save Church Settings'}
-            </button>
+          <button type="submit" disabled={saving} className="btn btn-primary"
+            style={{ padding: '12px 30px', fontSize: '16px', opacity: saving ? 0.7 : 1, display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            {saving && <span style={{ width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.4)', borderTop: '2px solid white', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />}
+            {saving ? (uploadStatus || 'Saving...') : 'Save Church Settings'}
+          </button>
           </div>
 
           {/* Message */}

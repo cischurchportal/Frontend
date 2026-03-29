@@ -395,13 +395,11 @@ function ServiceTimingManager() {
                 </label>
               </div>
 
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <button type="submit" className="btn btn-primary">
                   {editingService ? 'Update Service' : 'Add Service'}
                 </button>
-                <button type="button" onClick={resetForm} className="btn" style={{ backgroundColor: '#6c757d', color: 'white' }}>
-                  Cancel
-                </button>
+                <button type="button" onClick={resetForm} className="btn" style={{ backgroundColor: '#6c757d', color: 'white' }}>Cancel</button>
               </div>
             </div>
           </form>

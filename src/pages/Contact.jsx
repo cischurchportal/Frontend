@@ -1,35 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import ErrorPopup from '../components/ErrorPopup'
+import { useAppContext } from '../context/AppContext'
 
 function Contact() {
-  const [churchSettings, setChurchSettings] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { churchSettings, loading } = useAppContext()
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    fetchChurchSettings()
-  }, [])
-
-  const fetchChurchSettings = async () => {
-    try {
-      const response = await fetch('/api/church/home')
-      const data = await response.json()
-      if (data.success) {
-        setChurchSettings(data.data.church_settings)
-        setError('')
-      } else {
-        setError('Failed to load church information')
-      }
-    } catch (error) {
-      console.error('Error fetching church settings:', error)
-      setError('Connection error. Please try again later.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   if (loading) {
     return <Loader fullScreen message="Loading contact information..." />
@@ -223,8 +201,6 @@ function Contact() {
                 borderRadius: '20px',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
                 textAlign: 'center',
-                animationDelay: `${index * 0.1}s`,
-                opacity: 0,
                 position: 'relative',
                 overflow: 'hidden'
               }}
@@ -286,9 +262,7 @@ function Contact() {
           backgroundColor: 'white',
           borderRadius: '24px',
           overflow: 'hidden',
-          boxShadow: '0 12px 48px rgba(0,0,0,0.12)',
-          animationDelay: '0.4s',
-          opacity: 0
+          boxShadow: '0 12px 48px rgba(0,0,0,0.12)'
         }}>
           <div style={{
             padding: '40px',

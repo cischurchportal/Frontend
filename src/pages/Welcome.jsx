@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import PriestSection from '../components/PriestSection'
@@ -10,33 +10,11 @@ import CarouselSection from '../components/CarouselSection'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import ErrorPopup from '../components/ErrorPopup'
+import { useAppContext } from '../context/AppContext'
 
 function Welcome() {
-  const [homeData, setHomeData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { homeData, carousels, loading } = useAppContext()
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    fetchHomeData()
-  }, [])
-
-  const fetchHomeData = async () => {
-    try {
-      const response = await fetch('/api/church/home')
-      const data = await response.json()
-      if (data.success) {
-        setHomeData(data.data)
-        setError('')
-      } else {
-        setError('Failed to load church data')
-      }
-    } catch (error) {
-      console.error('Error fetching home data:', error)
-      setError('Connection error. Please check if the server is running.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   if (loading) {
     return <Loader fullScreen message="Loading church information..." />
@@ -54,35 +32,12 @@ function Welcome() {
           minHeight: '100vh',
           padding: '20px'
         }}>
-          <div style={{
-            fontSize: '5rem',
-            marginBottom: '20px',
-            animation: 'pulse 2s ease-in-out infinite'
-          }}>
-            ⛪
-          </div>
-          <h2 style={{ 
-            color: '#721c24', 
-            marginBottom: '15px',
-            fontSize: '2rem',
-            textAlign: 'center'
-          }}>
+          <div style={{ fontSize: '5rem', marginBottom: '20px', animation: 'pulse 2s ease-in-out infinite' }}>⛪</div>
+          <h2 style={{ color: '#721c24', marginBottom: '15px', fontSize: '2rem', textAlign: 'center' }}>
             Unable to Load Page
           </h2>
-          <p style={{ 
-            color: '#666', 
-            marginBottom: '30px',
-            textAlign: 'center',
-            maxWidth: '500px'
-          }}>
-            {error}
-          </p>
-          <button 
-            onClick={fetchHomeData}
-            className="btn btn-primary"
-          >
-            🔄 Retry
-          </button>
+          <p style={{ color: '#666', marginBottom: '30px', textAlign: 'center', maxWidth: '500px' }}>{error}</p>
+          <button onClick={() => window.location.reload()} className="btn btn-primary">🔄 Retry</button>
         </div>
       </div>
     )
@@ -386,33 +341,21 @@ function Welcome() {
         
         {/* Priority Section 1: Verse of the Day - Full Width, Most Important */}
         {verseOfDay && (
-          <div className="fade-in-up" style={{ 
-            marginBottom: '50px',
-            animationDelay: '0.1s',
-            opacity: 0
-          }}>
+          <div style={{ marginBottom: '50px' }}>
             <VerseOfDay verse={verseOfDay} />
           </div>
         )}
 
         {/* Priority Section 2: Priests Carousel - Full Width, Large & Prominent */}
         {priests.length > 0 && (
-          <div className="fade-in-up" style={{ 
-            marginBottom: '50px',
-            animationDelay: '0.2s', 
-            opacity: 0 
-          }}>
+          <div style={{ marginBottom: '50px' }}>
             <PriestSection priests={priests} />
           </div>
         )}
 
         {/* Priority Section 3: Service Timings - Full Width */}
         {serviceTimings.length > 0 && (
-          <div id="services" className="fade-in-up" style={{ 
-            marginBottom: '50px',
-            animationDelay: '0.4s',
-            opacity: 0
-          }}>
+          <div id="services" style={{ marginBottom: '50px' }}>
             <ServiceTimings services={serviceTimings} />
           </div>
         )}
@@ -428,30 +371,18 @@ function Welcome() {
           {/* Left Column: Announcements */}
           <div>
             {announcements.length > 0 && (
-              <div className="fade-in-up" style={{ animationDelay: '0.5s', opacity: 0 }}>
-                <Announcements announcements={announcements} />
-              </div>
+              <Announcements announcements={announcements} />
             )}
           </div>
 
           {/* Right Sidebar: Celebrations */}
-          <div style={{ 
-            position: 'sticky',
-            top: '120px'
-          }}>
-            <div className="fade-in-up" style={{ animationDelay: '0.5s', opacity: 0 }}>
-              <TodayCelebrations celebrations={todayCelebrations} />
-            </div>
+          <div style={{ position: 'sticky', top: '120px' }}>
+            <TodayCelebrations celebrations={todayCelebrations} />
           </div>
         </div>
 
         {/* Priority Section 5: Gallery/Carousels - Full Width */}
-        <div className="fade-in-up" style={{ 
-          animationDelay: '0.6s',
-          opacity: 0
-        }}>
-          <CarouselSection />
-        </div>
+        <CarouselSection carousels={carousels} />
       </div>
 
       {/* Footer */}

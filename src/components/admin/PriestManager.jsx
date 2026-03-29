@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { compressImage } from '../../utils/compressImage'
 
 function PriestManager() {
   const [priests, setPriests] = useState([])
@@ -6,6 +7,7 @@ function PriestManager() {
   const [showForm, setShowForm] = useState(false)
   const [editingPriest, setEditingPriest] = useState(null)
   const [message, setMessage] = useState('')
+  const [uploading, setUploading] = useState(false)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -45,23 +47,26 @@ function PriestManager() {
     try {
       let imagePath = formData.image
 
-      // If a new image file is selected, upload it first
+      // If a new image file is selected, compress then upload
       if (formData.imageFile) {
+        setUploading(true)
+        setMessage('Compressing image...')
+        const compressed = await compressImage(formData.imageFile)
+        setMessage('Uploading image...')
         const imageFormData = new FormData()
-        imageFormData.append('file', formData.imageFile)
-        imageFormData.append('type', 'priest')
-        imageFormData.append('name', formData.name.replace(/\s+/g, '_').toLowerCase())
+        imageFormData.append('file', compressed)
 
-        const uploadResponse = await fetch('/api/upload/priest-image', {
+        const uploadResponse = await fetch('/api/upload/', {
           method: 'POST',
           body: imageFormData
         })
 
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json()
-          imagePath = uploadData.file_url  // Changed from file_path to file_url
+          imagePath = uploadData.file_url
         } else {
           setMessage('Error uploading image')
+          setUploading(false)
           return
         }
       }
@@ -102,6 +107,8 @@ function PriestManager() {
     } catch (error) {
       console.error('Error saving priest:', error)
       setMessage('Error saving priest')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -413,11 +420,23 @@ function PriestManager() {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button type="submit" className="btn btn-primary">
-                  {editingPriest ? 'Update Priest' : 'Add Priest'}
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <button type="submit" className="btn btn-primary" disabled={uploading}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: uploading ? 0.8 : 1 }}>
+                  {uploading && (
+                    <span style={{
+                      width: '16px', height: '16px',
+                      border: '2px solid rgba(255,255,255,0.4)',
+                      borderTop: '2px solid white',
+                      borderRadius: '50%',
+                      display: 'inline-block',
+                      animation: 'spin 0.8s linear infinite'
+                    }} />
+                  )}
+                  {uploading ? message || 'Uploading...' : editingPriest ? 'Update Priest' : 'Add Priest'}
                 </button>
-                <button type="button" onClick={resetForm} className="btn" style={{ backgroundColor: '#6c757d', color: 'white' }}>
+                <button type="button" onClick={resetForm} className="btn"
+                  style={{ backgroundColor: '#6c757d', color: 'white' }} disabled={uploading}>
                   Cancel
                 </button>
               </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import ErrorPopup from '../ErrorPopup'
 import Loader from '../Loader'
+import { compressImage } from '../../utils/compressImage'
 
 function DeveloperManager() {
   const [developers, setDevelopers] = useState([])
@@ -10,6 +11,8 @@ function DeveloperManager() {
   const [editingId, setEditingId] = useState(null)
   const [editForm, setEditForm] = useState({})
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState('')
   const [showAddForm, setShowAddForm] = useState(false)
 
   useEffect(() => {
@@ -131,23 +134,21 @@ function DeveloperManager() {
     const file = e.target.files[0]
     if (!file) return
 
-    const formData = new FormData()
-    formData.append('file', file)
-
-    setMessage('Uploading image...')
-    setMessageType('info')
+    setUploading(true)
+    setUploadStatus('Compressing image...')
 
     try {
-      const response = await fetch('/api/upload/', {
-        method: 'POST',
-        body: formData
-      })
-      
+      const compressed = await compressImage(file)
+      setUploadStatus('Uploading...')
+      const formData = new FormData()
+      formData.append('file', compressed)
+
+      const response = await fetch('/api/upload/', { method: 'POST', body: formData })
       const data = await response.json()
-      
+
       if (data.success) {
-        setEditForm({ ...editForm, image: data.file_url })  // Changed from file_path to file_url
-        setMessage('Image uploaded successfully to R2!')
+        setEditForm(prev => ({ ...prev, image: data.file_url }))
+        setMessage('Image uploaded successfully!')
         setMessageType('success')
         setTimeout(() => setMessage(''), 3000)
       } else {
@@ -155,9 +156,11 @@ function DeveloperManager() {
         setMessageType('error')
       }
     } catch (error) {
-      console.error('Upload error:', error)
       setMessage('Error uploading image: ' + error.message)
       setMessageType('error')
+    } finally {
+      setUploading(false)
+      setUploadStatus('')
     }
   }
 
@@ -175,8 +178,7 @@ function DeveloperManager() {
         alignItems: 'center',
         marginBottom: '30px'
       }}>
-        <h2 style={{ margin: 0 }}>👨‍💻 Developer Team Manager</h2>
-        <button
+        <h2 style={{ margin: 0 }}>👨‍💻 Developer Team Manager</h2>        <button
           onClick={handleAdd}
           className="btn btn-primary"
         >
@@ -276,47 +278,30 @@ function DeveloperManager() {
                   Profile Image:
                 </label>
                 {editForm.image && (
-                  <img
-                    src={editForm.image}
-                    alt="Preview"
-                    style={{
-                      width: '100px',
-                      height: '100px',
-                      objectFit: 'cover',
-                      borderRadius: '50%',
-                      marginBottom: '10px',
-                      border: '3px solid #667eea'
-                    }}
+                  <img src={editForm.image} alt="Preview"
+                    style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '50%', marginBottom: '10px', border: '3px solid #667eea' }}
                   />
                 )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+                  {uploading && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#667eea', fontSize: '0.9rem' }}>
+                      <span style={{ width: '14px', height: '14px', border: '2px solid #ddd', borderTop: '2px solid #667eea', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
+                      {uploadStatus}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={saving}
-                style={{ opacity: saving ? 0.7 : 1 }}
-              >
+            <div style={{ marginTop: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <button type="submit" className="btn btn-primary" disabled={saving || uploading}
+                style={{ opacity: saving || uploading ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {saving && <span style={{ width: '14px', height: '14px', border: '2px solid rgba(255,255,255,0.4)', borderTop: '2px solid white', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />}
                 {saving ? 'Saving...' : (editingId ? 'Update' : 'Add')} Developer
               </button>
-              <button
-                type="button"
-                onClick={handleCancel}
-                style={{
-                  padding: '10px 20px',
-                  border: '1px solid #ddd',
-                  borderRadius: '5px',
-                  backgroundColor: 'white',
-                  cursor: 'pointer'
-                }}
-              >
+              <button type="button" onClick={handleCancel} disabled={saving || uploading}
+                style={{ padding: '10px 20px', border: '1px solid #ddd', borderRadius: '5px', backgroundColor: 'white', cursor: 'pointer' }}>
                 Cancel
               </button>
             </div>

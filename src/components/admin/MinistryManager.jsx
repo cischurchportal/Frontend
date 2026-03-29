@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import ErrorPopup from '../ErrorPopup'
 import Loader from '../Loader'
+import { compressImage } from '../../utils/compressImage'
 
 function MinistryManager() {
   const [ministries, setMinistries] = useState([])
@@ -10,6 +11,8 @@ function MinistryManager() {
   const [editingId, setEditingId] = useState(null)
   const [editForm, setEditForm] = useState({})
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState('')
 
   useEffect(() => {
     fetchMinistries()
@@ -20,7 +23,9 @@ function MinistryManager() {
       const response = await fetch('/api/ministries/')
       const data = await response.json()
       if (data.success) {
-        setMinistries(data.data)
+        // API may return data.data as array or data.data.ministries
+        const list = Array.isArray(data.data) ? data.data : (data.data?.ministries || [])
+        setMinistries(list)
       } else {
         setMessage('Failed to load ministries')
         setMessageType('error')
@@ -84,23 +89,21 @@ function MinistryManager() {
     const file = e.target.files[0]
     if (!file) return
 
-    const formData = new FormData()
-    formData.append('file', file)
-
-    setMessage('Uploading image...')
-    setMessageType('info')
+    setUploading(true)
+    setUploadStatus('Compressing image...')
 
     try {
-      const response = await fetch('/api/upload/', {
-        method: 'POST',
-        body: formData
-      })
-      
+      const compressed = await compressImage(file)
+      setUploadStatus('Uploading...')
+      const formData = new FormData()
+      formData.append('file', compressed)
+
+      const response = await fetch('/api/upload/', { method: 'POST', body: formData })
       const data = await response.json()
-      
+
       if (data.success) {
-        setEditForm({ ...editForm, image: data.file_url })  // Changed from file_path to file_url
-        setMessage('Image uploaded successfully to R2! Remember to click "Save Changes" to persist.')
+        setEditForm(prev => ({ ...prev, image: data.file_url }))
+        setMessage('Image uploaded! Click "Save Changes" to persist.')
         setMessageType('success')
         setTimeout(() => setMessage(''), 5000)
       } else {
@@ -108,9 +111,11 @@ function MinistryManager() {
         setMessageType('error')
       }
     } catch (error) {
-      console.error('Upload error:', error)
       setMessage('Error uploading image: ' + error.message)
       setMessageType('error')
+    } finally {
+      setUploading(false)
+      setUploadStatus('')
     }
   }
 
@@ -123,18 +128,6 @@ function MinistryManager() {
       {message && <ErrorPopup message={message} type={messageType} onClose={() => setMessage('')} />}
       
       <h2 style={{ marginBottom: '30px' }}>🙏 Ministry Manager</h2>
-
-      {message && (
-        <div style={{
-          padding: '10px',
-          marginBottom: '20px',
-          borderRadius: '5px',
-          backgroundColor: message.includes('success') ? '#d4edda' : '#f8d7da',
-          color: message.includes('success') ? '#155724' : '#721c24'
-        }}>
-          {message}
-        </div>
-      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {ministries.map((ministry) => (
@@ -237,51 +230,32 @@ function MinistryManager() {
                     />
                   </div>
 
-                  <div style={{ gridColumn: 'span 2' }}>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                      Ministry Image:
-                    </label>
+                    <div style={{ gridColumn: 'span 2' }}>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Ministry Image:</label>
                     {editForm.image && (
-                      <img
-                        src={editForm.image}
-                        alt={editForm.name}
-                        style={{
-                          width: '200px',
-                          height: '150px',
-                          objectFit: 'cover',
-                          borderRadius: '5px',
-                          marginBottom: '10px'
-                        }}
-                      />
+                      <img src={editForm.image} alt={editForm.name}
+                        style={{ width: '200px', height: '150px', objectFit: 'cover', borderRadius: '5px', marginBottom: '10px' }} />
                     )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload(e, ministry.id)}
-                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, ministry.id)} disabled={uploading} />
+                      {uploading && (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#667eea', fontSize: '0.9rem' }}>
+                          <span style={{ width: '14px', height: '14px', border: '2px solid #ddd', borderTop: '2px solid #667eea', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
+                          {uploadStatus}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={saving}
-                    style={{ opacity: saving ? 0.7 : 1 }}
-                  >
+                <div style={{ marginTop: '15px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <button type="submit" className="btn btn-primary" disabled={saving || uploading}
+                    style={{ opacity: saving || uploading ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {saving && <span style={{ width: '14px', height: '14px', border: '2px solid rgba(255,255,255,0.4)', borderTop: '2px solid white', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />}
                     {saving ? 'Saving...' : 'Save Changes'}
                   </button>
-                  <button
-                    type="button"
-                    onClick={handleCancel}
-                    style={{
-                      padding: '10px 20px',
-                      border: '1px solid #ddd',
-                      borderRadius: '5px',
-                      backgroundColor: 'white',
-                      cursor: 'pointer'
-                    }}
-                  >
+                  <button type="button" onClick={handleCancel} disabled={saving || uploading}
+                    style={{ padding: '10px 20px', border: '1px solid #ddd', borderRadius: '5px', backgroundColor: 'white', cursor: 'pointer' }}>
                     Cancel
                   </button>
                 </div>

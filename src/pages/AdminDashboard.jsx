@@ -208,7 +208,6 @@ function AdminDashboard() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className="fade-in"
                   style={{
                     background: activeTab === tab.id 
                       ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
@@ -228,8 +227,7 @@ function AdminDashboard() {
                     boxShadow: activeTab === tab.id 
                       ? '0 4px 12px rgba(102, 126, 234, 0.3)' 
                       : 'none',
-                    animationDelay: `${index * 0.03}s`,
-                    opacity: 0
+                    width: '100%'
                   }}
                   onMouseEnter={(e) => {
                     if (activeTab !== tab.id) {
@@ -414,7 +412,7 @@ function OverviewTab() {
         {statCards.map((card, index) => (
           <div
             key={card.title}
-            className="card-hover fade-in-up"
+            className="card-hover"
             style={{
               background: card.bgColor,
               padding: '30px',
@@ -422,9 +420,7 @@ function OverviewTab() {
               textAlign: 'center',
               position: 'relative',
               overflow: 'hidden',
-              border: `2px solid ${card.color}20`,
-              animationDelay: `${index * 0.1}s`,
-              opacity: 0
+              border: `2px solid ${card.color}20`
             }}
           >
             <div style={{

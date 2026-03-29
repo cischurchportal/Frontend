@@ -1,25 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import DevelopersModal from './DevelopersModal'
+import { useAppContext } from '../context/AppContext'
 
 function Footer() {
-  const [churchSettings, setChurchSettings] = useState(null)
+  const { churchSettings } = useAppContext()
   const [showDevelopersModal, setShowDevelopersModal] = useState(false)
-
-  useEffect(() => {
-    fetchChurchSettings()
-  }, [])
-
-  const fetchChurchSettings = async () => {
-    try {
-      const response = await fetch('/api/church/home')
-      const data = await response.json()
-      if (data.success) {
-        setChurchSettings(data.data.church_settings)
-      }
-    } catch (error) {
-      console.error('Error fetching church settings:', error)
-    }
-  }
 
   const footerSections = [
     {

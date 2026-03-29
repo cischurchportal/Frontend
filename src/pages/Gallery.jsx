@@ -1,38 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import ErrorPopup from '../components/ErrorPopup'
+import MediaModal from '../components/MediaModal'
+import { useAppContext } from '../context/AppContext'
 
 function Gallery() {
-  const [carousels, setCarousels] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { carousels, loading } = useAppContext()
   const [error, setError] = useState('')
-  const [selectedMedia, setSelectedMedia] = useState(null)
+  const [selectedIndex, setSelectedIndex] = useState(null)
   const [activeCategory, setActiveCategory] = useState('all')
-
-  useEffect(() => {
-    fetchCarousels()
-  }, [])
-
-  const fetchCarousels = async () => {
-    try {
-      const response = await fetch('/api/carousels/')
-      const data = await response.json()
-      if (data.success) {
-        const carouselsList = data.data?.carousels || data.data || []
-        setCarousels(carouselsList)
-        setError('')
-      } else {
-        setError('Failed to load gallery')
-      }
-    } catch (error) {
-      console.error('Error fetching carousels:', error)
-      setError('Connection error. Please try again later.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const getAllMedia = () => {
     const allMedia = []
@@ -73,12 +51,12 @@ function Gallery() {
     return allMedia.filter(media => media.carouselCategory === activeCategory)
   }
 
-  const openLightbox = (media) => {
-    setSelectedMedia(media)
+  const openLightbox = (index) => {
+    setSelectedIndex(index)
   }
 
   const closeLightbox = () => {
-    setSelectedMedia(null)
+    setSelectedIndex(null)
   }
 
   if (loading) {
@@ -210,7 +188,6 @@ function Gallery() {
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className="fade-in"
               style={{
                 padding: '14px 32px',
                 border: 'none',
@@ -227,9 +204,7 @@ function Gallery() {
                   : '0 4px 16px rgba(0,0,0,0.08)',
                 transition: 'all 0.3s ease',
                 textTransform: 'capitalize',
-                letterSpacing: '0.5px',
-                animationDelay: `${index * 0.05}s`,
-                opacity: 0
+                letterSpacing: '0.5px'
               }}
               onMouseEnter={(e) => {
                 if (activeCategory !== category) {
@@ -283,18 +258,16 @@ function Gallery() {
             {mediaItems.map((media, index) => (
               <div
                 key={media.id || index}
-                className="card-hover fade-in-up"
+                className="card-hover"
                 style={{
                   position: 'relative',
                   borderRadius: '20px',
                   overflow: 'hidden',
                   boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
                   cursor: 'pointer',
-                  backgroundColor: 'white',
-                  animationDelay: `${index * 0.05}s`,
-                  opacity: 0
+                  backgroundColor: 'white'
                 }}
-                onClick={() => openLightbox(media)}
+                onClick={() => openLightbox(index)}
               >
                 {/* Media Preview */}
                 <div style={{
@@ -320,43 +293,37 @@ function Gallery() {
                         e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="320" height="280"%3E%3Crect fill="%23ddd" width="320" height="280"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EImage%3C/text%3E%3C/svg%3E'
                       }}
                     />
-                  ) : (
-                    <div style={{
-                      width: '100%',
-                      height: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: '#000',
-                      position: 'relative'
-                    }}>
-                      <video
-                        src={media.file_path}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover'
-                        }}
-                      />
-                      <div style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '70px',
-                        height: '70px',
-                        background: 'rgba(255,255,255,0.95)',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '2rem',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
-                      }}>
-                        ▶️
+                  ) : (() => {
+                    // Extract video ID from embed URL for thumbnail
+                    const videoId = media.file_path.split('/embed/')[1]
+                    return (
+                      <div style={{ width: '100%', height: '100%', position: 'relative', backgroundColor: '#000' }}>
+                        <img
+                          src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+                          alt={media.caption || 'Video thumbnail'}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                        <div style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          width: '60px',
+                          height: '60px',
+                          background: 'rgba(255,0,0,0.9)',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '1.5rem',
+                          color: 'white',
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.4)'
+                        }}>
+                          ▶
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )
+                  })()}
                   
                   {/* Category Badge */}
                   <div style={{
@@ -405,126 +372,13 @@ function Gallery() {
       </div>
 
       {/* Lightbox Modal */}
-      {selectedMedia && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.95)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10000,
-            padding: '20px',
-            animation: 'fadeIn 0.3s ease'
-          }}
-          onClick={closeLightbox}
-        >
-          {/* Close Button */}
-          <button
-            onClick={closeLightbox}
-            style={{
-              position: 'absolute',
-              top: '30px',
-              right: '30px',
-              background: 'rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(10px)',
-              border: 'none',
-              color: 'white',
-              fontSize: '2.5rem',
-              cursor: 'pointer',
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.3s ease',
-              fontWeight: '300'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'
-              e.currentTarget.style.transform = 'rotate(90deg)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'
-              e.currentTarget.style.transform = 'rotate(0deg)'
-            }}
-          >
-            ×
-          </button>
-
-          {/* Media Content */}
-          <div
-            style={{
-              maxWidth: '90%',
-              maxHeight: '90%',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              animation: 'scaleIn 0.4s ease'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {selectedMedia.media_type === 'image' ? (
-              <img
-                src={selectedMedia.file_path}
-                alt={selectedMedia.caption}
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '80vh',
-                  objectFit: 'contain',
-                  borderRadius: '16px',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
-                }}
-              />
-            ) : (
-              <video
-                src={selectedMedia.file_path}
-                controls
-                autoPlay
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '80vh',
-                  borderRadius: '16px',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
-                }}
-              />
-            )}
-            
-            {/* Caption */}
-            {selectedMedia.caption && (
-              <div style={{
-                marginTop: '30px',
-                color: 'white',
-                textAlign: 'center',
-                maxWidth: '700px',
-                background: 'rgba(255,255,255,0.1)',
-                backdropFilter: 'blur(10px)',
-                padding: '25px 35px',
-                borderRadius: '16px'
-              }}>
-                <h3 style={{ 
-                  fontSize: '1.6rem', 
-                  marginBottom: '10px',
-                  fontWeight: '700'
-                }}>
-                  {selectedMedia.caption}
-                </h3>
-                <p style={{ 
-                  fontSize: '1.05rem', 
-                  opacity: 0.9,
-                  fontWeight: '500'
-                }}>
-                  📁 {selectedMedia.carouselTitle}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+      {selectedIndex !== null && mediaItems[selectedIndex] && (
+        <MediaModal
+          media={mediaItems[selectedIndex]}
+          mediaList={mediaItems}
+          onClose={closeLightbox}
+          onNavigate={setSelectedIndex}
+        />
       )}
 
       <Footer />

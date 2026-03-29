@@ -23,10 +23,17 @@ function CelebrationManager() {
 
   const fetchCelebrations = async () => {
     try {
-      const response = await fetch('/api/church/celebrations/upcoming?days=30')
+      // Try to get all celebrations; fall back to upcoming if endpoint doesn't exist
+      const response = await fetch('/api/church/celebrations')
       const data = await response.json()
       if (data.success) {
-        setCelebrations(data.data.celebrations)
+        const list = Array.isArray(data.data) ? data.data : (data.data?.celebrations || [])
+        setCelebrations(list)
+      } else {
+        // fallback to upcoming
+        const r2 = await fetch('/api/church/celebrations/upcoming?days=365')
+        const d2 = await r2.json()
+        if (d2.success) setCelebrations(d2.data.celebrations || [])
       }
     } catch (error) {
       console.error('Error fetching celebrations:', error)
@@ -331,13 +338,11 @@ function CelebrationManager() {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <button type="submit" className="btn btn-primary">
                   {editingCelebration ? 'Update Celebration' : 'Add Celebration'}
                 </button>
-                <button type="button" onClick={resetForm} className="btn" style={{ backgroundColor: '#6c757d', color: 'white' }}>
-                  Cancel
-                </button>
+                <button type="button" onClick={resetForm} className="btn" style={{ backgroundColor: '#6c757d', color: 'white' }}>Cancel</button>
               </div>
             </div>
           </form>

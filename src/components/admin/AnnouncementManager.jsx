@@ -307,8 +307,9 @@ function AnnouncementManager() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button type="submit" className="btn btn-primary">
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <button type="submit" className="btn btn-primary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                   {editingAnnouncement ? 'Update Announcement' : 'Add Announcement'}
                 </button>
                 <button type="button" onClick={resetForm} className="btn" style={{ backgroundColor: '#6c757d', color: 'white' }}>

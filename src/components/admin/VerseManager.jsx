@@ -233,13 +233,11 @@ function VerseManager() {
                 </label>
               </div>
 
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <button type="submit" className="btn btn-primary">
                   {editingVerse ? 'Update Verse' : 'Add Verse'}
                 </button>
-                <button type="button" onClick={resetForm} className="btn" style={{ backgroundColor: '#6c757d', color: 'white' }}>
-                  Cancel
-                </button>
+                <button type="button" onClick={resetForm} className="btn" style={{ backgroundColor: '#6c757d', color: 'white' }}>Cancel</button>
               </div>
             </div>
           </form>

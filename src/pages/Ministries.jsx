@@ -187,8 +187,6 @@ function Ministries() {
                   boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
                   display: 'flex',
                   flexDirection: 'column',
-                  animationDelay: `${index * 0.1}s`,
-                  opacity: 0,
                   position: 'relative'
                 }}
               >

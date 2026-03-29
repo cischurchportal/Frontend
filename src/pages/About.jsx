@@ -200,9 +200,7 @@ function About() {
           <div className="fade-in-up" style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '20px',
-            animationDelay: '0.2s',
-            opacity: 0
+            gap: '20px'
           }}>
             {aboutData?.images && aboutData.images.length > 0 ? (
               aboutData.images.map((image, index) => (
@@ -279,9 +277,7 @@ function About() {
           background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
           padding: '50px',
           borderRadius: '20px',
-          textAlign: 'center',
-          animationDelay: '0.4s',
-          opacity: 0
+          textAlign: 'center'
         }}>
           <h3 style={{
             fontSize: '2rem',
