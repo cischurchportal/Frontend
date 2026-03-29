@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiUrl } from '../../utils/api'
 
 function CelebrationManager() {
   const [celebrations, setCelebrations] = useState([])
@@ -24,14 +25,14 @@ function CelebrationManager() {
   const fetchCelebrations = async () => {
     try {
       // Try to get all celebrations; fall back to upcoming if endpoint doesn't exist
-      const response = await fetch('/api/church/celebrations')
+      const response = await fetch(apiUrl('/api/church/celebrations'))
       const data = await response.json()
       if (data.success) {
         const list = Array.isArray(data.data) ? data.data : (data.data?.celebrations || [])
         setCelebrations(list)
       } else {
         // fallback to upcoming
-        const r2 = await fetch('/api/church/celebrations/upcoming?days=365')
+        const r2 = await fetch(apiUrl('/api/church/celebrations/upcoming?days=365'))
         const d2 = await r2.json()
         if (d2.success) setCelebrations(d2.data.celebrations || [])
       }
@@ -54,8 +55,8 @@ function CelebrationManager() {
       }
 
       const url = editingCelebration 
-        ? `/api/church/celebrations/${editingCelebration.id}`
-        : '/api/church/celebrations'
+        ? apiUrl(`/api/church/celebrations/${editingCelebration.id}`)
+        : apiUrl('/api/church/celebrations')
       
       const method = editingCelebration ? 'PUT' : 'POST'
 
@@ -99,7 +100,7 @@ function CelebrationManager() {
     if (!confirm('Are you sure you want to delete this celebration?')) return
 
     try {
-      const response = await fetch(`/api/church/celebrations/${celebrationId}`, {
+      const response = await fetch(apiUrl(`/api/church/celebrations/${celebrationId}`), {
         method: 'DELETE'
       })
 

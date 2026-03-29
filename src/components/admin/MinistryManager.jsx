@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import ErrorPopup from '../ErrorPopup'
 import Loader from '../Loader'
 import { compressImage } from '../../utils/compressImage'
+import { apiUrl } from '../../utils/api'
 
 function MinistryManager() {
   const [ministries, setMinistries] = useState([])
@@ -20,7 +21,7 @@ function MinistryManager() {
 
   const fetchMinistries = async () => {
     try {
-      const response = await fetch('/api/ministries/')
+      const response = await fetch(apiUrl('/api/ministries/'))
       const data = await response.json()
       if (data.success) {
         // API may return data.data as array or data.data.ministries
@@ -55,7 +56,7 @@ function MinistryManager() {
     setMessage('')
     
     try {
-      const response = await fetch(`/api/ministries/${editingId}`, {
+      const response = await fetch(apiUrl(`/api/ministries/${editingId}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +99,7 @@ function MinistryManager() {
       const formData = new FormData()
       formData.append('file', compressed)
 
-      const response = await fetch('/api/upload/', { method: 'POST', body: formData })
+      const response = await fetch(apiUrl('/api/upload/'), { method: 'POST', body: formData })
       const data = await response.json()
 
       if (data.success) {

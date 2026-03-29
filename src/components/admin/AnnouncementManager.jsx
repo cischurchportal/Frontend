@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiUrl } from '../../utils/api'
 
 function AnnouncementManager() {
   const [announcements, setAnnouncements] = useState([])
@@ -23,7 +24,7 @@ function AnnouncementManager() {
 
   const fetchAnnouncements = async () => {
     try {
-      const response = await fetch('/api/church/announcements')
+      const response = await fetch(apiUrl('/api/church/announcements'))
       const data = await response.json()
       if (data.success) {
         setAnnouncements(data.data.announcements)
@@ -41,8 +42,8 @@ function AnnouncementManager() {
 
     try {
       const url = editingAnnouncement 
-        ? `/api/church/announcements/${editingAnnouncement.id}`
-        : '/api/church/announcements'
+        ? apiUrl(`/api/church/announcements/${editingAnnouncement.id}`)
+        : apiUrl('/api/church/announcements')
       
       const method = editingAnnouncement ? 'PUT' : 'POST'
 
@@ -86,7 +87,7 @@ function AnnouncementManager() {
     if (!confirm('Are you sure you want to delete this announcement?')) return
 
     try {
-      const response = await fetch(`/api/church/announcements/${announcementId}`, {
+      const response = await fetch(apiUrl(`/api/church/announcements/${announcementId}`), {
         method: 'DELETE'
       })
 

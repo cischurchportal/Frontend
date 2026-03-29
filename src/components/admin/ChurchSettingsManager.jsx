@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { compressImage } from '../../utils/compressImage'
+import { apiUrl } from '../../utils/api'
 
 function ChurchSettingsManager() {
   const [settings, setSettings] = useState(null)
@@ -16,7 +17,7 @@ function ChurchSettingsManager() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/church/settings')
+      const response = await fetch(apiUrl('/api/church/settings'))
       const data = await response.json()
       if (data.success) {
         setSettings(data.data)
@@ -44,7 +45,7 @@ function ChurchSettingsManager() {
         setUploadStatus('Uploading diocese logo...')
         const logoFormData = new FormData()
         logoFormData.append('file', compressed)
-        const uploadResponse = await fetch('/api/upload/', { method: 'POST', body: logoFormData })
+        const uploadResponse = await fetch(apiUrl('/api/upload/'), { method: 'POST', body: logoFormData })
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json()
           updatedSettings.diocese_logo = uploadData.file_url
@@ -58,7 +59,7 @@ function ChurchSettingsManager() {
         setUploadStatus('Uploading church logo...')
         const logoFormData = new FormData()
         logoFormData.append('file', compressed)
-        const uploadResponse = await fetch('/api/upload/', { method: 'POST', body: logoFormData })
+        const uploadResponse = await fetch(apiUrl('/api/upload/'), { method: 'POST', body: logoFormData })
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json()
           updatedSettings.church_logo = uploadData.file_url
@@ -67,7 +68,7 @@ function ChurchSettingsManager() {
 
       setUploadStatus('')
 
-      const response = await fetch('/api/church/settings', {
+      const response = await fetch(apiUrl('/api/church/settings'), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

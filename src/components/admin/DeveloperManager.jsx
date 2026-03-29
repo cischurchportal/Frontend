@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import ErrorPopup from '../ErrorPopup'
 import Loader from '../Loader'
 import { compressImage } from '../../utils/compressImage'
+import { apiUrl } from '../../utils/api'
 
 function DeveloperManager() {
   const [developers, setDevelopers] = useState([])
@@ -21,7 +22,7 @@ function DeveloperManager() {
 
   const fetchDevelopers = async () => {
     try {
-      const response = await fetch('/api/developers/')
+      const response = await fetch(apiUrl('/api/developers/'))
       const data = await response.json()
       if (data.success) {
         setDevelopers(data.data)
@@ -69,8 +70,8 @@ function DeveloperManager() {
     
     try {
       const url = editingId 
-        ? `/api/developers/${editingId}` 
-        : '/api/developers/'
+        ? apiUrl(`/api/developers/${editingId}`) 
+        : apiUrl('/api/developers/')
       const method = editingId ? 'PUT' : 'POST'
       
       const response = await fetch(url, {
@@ -108,7 +109,7 @@ function DeveloperManager() {
     if (!confirm('Are you sure you want to delete this developer?')) return
     
     try {
-      const response = await fetch(`/api/developers/${developerId}`, {
+      const response = await fetch(apiUrl(`/api/developers/${developerId}`), {
         method: 'DELETE'
       })
       
@@ -143,7 +144,7 @@ function DeveloperManager() {
       const formData = new FormData()
       formData.append('file', compressed)
 
-      const response = await fetch('/api/upload/', { method: 'POST', body: formData })
+      const response = await fetch(apiUrl('/api/upload/'), { method: 'POST', body: formData })
       const data = await response.json()
 
       if (data.success) {

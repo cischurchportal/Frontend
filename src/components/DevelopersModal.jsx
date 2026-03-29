@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiUrl } from '../utils/api'
 
 function DevelopersModal({ isOpen, onClose }) {
   const [developers, setDevelopers] = useState([])
@@ -12,7 +13,7 @@ function DevelopersModal({ isOpen, onClose }) {
 
   const fetchDevelopers = async () => {
     try {
-      const response = await fetch('/api/developers/active')
+      const response = await fetch(apiUrl('/api/developers/active'))
       const data = await response.json()
       if (data.success) {
         setDevelopers(data.data)

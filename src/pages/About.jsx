@@ -3,6 +3,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import ErrorPopup from '../components/ErrorPopup'
+import { apiUrl } from '../utils/api'
 
 function About() {
   const [aboutData, setAboutData] = useState(null)
@@ -15,7 +16,7 @@ function About() {
 
   const fetchAboutData = async () => {
     try {
-      const response = await fetch('/api/about/')
+      const response = await fetch(apiUrl('/api/about/'))
       const data = await response.json()
       if (data.success) {
         setAboutData(data.data)

@@ -3,6 +3,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import ErrorPopup from '../components/ErrorPopup'
+import { apiUrl } from '../utils/api'
 
 function Ministries() {
   const [ministries, setMinistries] = useState([])
@@ -15,7 +16,7 @@ function Ministries() {
 
   const fetchMinistries = async () => {
     try {
-      const response = await fetch('/api/ministries/')
+      const response = await fetch(apiUrl('/api/ministries/'))
       const data = await response.json()
       if (data.success) {
         setMinistries(data.data)

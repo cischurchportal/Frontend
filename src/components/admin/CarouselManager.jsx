@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { compressImage } from '../../utils/compressImage'
+import { apiUrl } from '../../utils/api'
 
 // Status for each queued image file
 // { file, name, size, status: 'pending'|'compressing'|'uploading'|'done'|'error', progress: 0-100, url, error }
@@ -33,7 +34,7 @@ function CarouselManager() {
 
   const fetchCarousels = async () => {
     try {
-      const response = await fetch('/api/carousels/')
+      const response = await fetch(apiUrl('/api/carousels/'))
       const data = await response.json()
       if (data.success) setCarousels(data.data.carousels)
     } catch (error) {
@@ -47,7 +48,7 @@ function CarouselManager() {
     e.preventDefault()
     setMessage('')
     try {
-      const url = editingCarousel ? `/api/carousels/${editingCarousel.id}` : '/api/carousels/'
+      const url = editingCarousel ? apiUrl(`/api/carousels/${editingCarousel.id}`) : apiUrl('/api/carousels/')
       const method = editingCarousel ? 'PUT' : 'POST'
       const response = await fetch(url, {
         method,
@@ -115,7 +116,7 @@ function CarouselManager() {
     fd.append('media_type', 'image')
 
     try {
-      const res = await fetch(`/api/carousels/${selectedCarousel.id}/upload`, {
+      const res = await fetch(apiUrl(`/api/carousels/${selectedCarousel.id}/upload`), {
         method: 'POST',
         body: fd
       })
@@ -162,7 +163,7 @@ function CarouselManager() {
     if (!videoForm.youtube_url.trim()) { setVideoMessage('Please enter a YouTube URL'); return }
     setVideoUploading(true)
     try {
-      const res = await fetch(`/api/carousels/${selectedCarousel.id}/video`, {
+      const res = await fetch(apiUrl(`/api/carousels/${selectedCarousel.id}/video`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(videoForm)
@@ -201,7 +202,7 @@ function CarouselManager() {
   const handleDelete = async (carouselId) => {
     if (!confirm('Are you sure you want to delete this carousel and all its media?')) return
     try {
-      const res = await fetch(`/api/carousels/${carouselId}`, { method: 'DELETE' })
+      const res = await fetch(apiUrl(`/api/carousels/${carouselId}`), { method: 'DELETE' })
       const data = await res.json()
       if (data.success) { setMessage('Carousel deleted successfully!'); fetchCarousels() }
       else setMessage('Error deleting carousel')
@@ -211,7 +212,7 @@ function CarouselManager() {
   const handleDeleteMedia = async (mediaId) => {
     if (!confirm('Are you sure you want to delete this media?')) return
     try {
-      const res = await fetch(`/api/carousels/media/${mediaId}`, { method: 'DELETE' })
+      const res = await fetch(apiUrl(`/api/carousels/media/${mediaId}`), { method: 'DELETE' })
       const data = await res.json()
       if (data.success) { setMessage('Media deleted successfully!'); fetchCarousels() }
       else setMessage('Error deleting media')

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { apiUrl } from '../utils/api'
 
 const AppContext = createContext(null)
 
@@ -10,8 +11,8 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/church/home').then(r => r.json()),
-      fetch('/api/carousels/').then(r => r.json())
+      fetch(apiUrl('/api/church/home')).then(r => r.json()),
+      fetch(apiUrl('/api/carousels/')).then(r => r.json())
     ]).then(([homeJson, carouselJson]) => {
       if (homeJson.success) {
         setHomeData(homeJson.data)

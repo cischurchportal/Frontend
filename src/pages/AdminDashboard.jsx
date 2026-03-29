@@ -12,6 +12,7 @@ import MinistryManager from '../components/admin/MinistryManager'
 import DeveloperManager from '../components/admin/DeveloperManager'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
+import { apiUrl } from '../utils/api'
 
 function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
@@ -288,8 +289,8 @@ function OverviewTab() {
   const fetchStats = async () => {
     try {
       const [carouselStats, memberStats] = await Promise.all([
-        fetch('/api/carousels/statistics').then(r => r.json()),
-        fetch('/api/members/statistics').then(r => r.json())
+        fetch(apiUrl('/api/carousels/statistics')).then(r => r.json()),
+        fetch(apiUrl('/api/members/statistics')).then(r => r.json())
       ])
 
       setStats({

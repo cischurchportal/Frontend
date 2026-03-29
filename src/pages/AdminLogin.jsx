@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Footer from '../components/Footer'
 import ErrorPopup from '../components/ErrorPopup'
+import { apiUrl } from '../utils/api'
 
 function AdminLogin() {
   const [credentials, setCredentials] = useState({
@@ -19,7 +20,7 @@ function AdminLogin() {
     setMessage('')
     
     try {
-      const response = await fetch('/api/auth/admin/login', {
+      const response = await fetch(apiUrl('/api/auth/admin/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

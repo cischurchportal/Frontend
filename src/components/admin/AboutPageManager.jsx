@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import ErrorPopup from '../ErrorPopup'
 import Loader from '../Loader'
 import { compressImage } from '../../utils/compressImage'
+import { apiUrl } from '../../utils/api'
 
 function AboutPageManager() {
   const [aboutData, setAboutData] = useState(null)
@@ -19,7 +20,7 @@ function AboutPageManager() {
 
   const fetchAboutData = async () => {
     try {
-      const response = await fetch('/api/about/')
+      const response = await fetch(apiUrl('/api/about/'))
       const data = await response.json()
       if (data.success) {
         // Ensure images array exists and has 4 slots
@@ -47,7 +48,7 @@ function AboutPageManager() {
     setMessage('')
     
     try {
-      const response = await fetch('/api/about/', {
+      const response = await fetch(apiUrl('/api/about/'), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +89,7 @@ function AboutPageManager() {
       const formData = new FormData()
       formData.append('file', compressed)
 
-      const response = await fetch('/api/upload/', { method: 'POST', body: formData })
+      const response = await fetch(apiUrl('/api/upload/'), { method: 'POST', body: formData })
       const data = await response.json()
 
       if (data.success) {

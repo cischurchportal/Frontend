@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiUrl } from '../../utils/api'
 
 function VerseManager() {
   const [verses, setVerses] = useState([])
@@ -21,7 +22,7 @@ function VerseManager() {
 
   const fetchTodayVerse = async () => {
     try {
-      const response = await fetch('/api/church/verse-of-day')
+      const response = await fetch(apiUrl('/api/church/verse-of-day'))
       const data = await response.json()
       if (data.success && data.data) {
         setVerses([data.data])
@@ -41,8 +42,8 @@ function VerseManager() {
 
     try {
       const url = editingVerse 
-        ? `/api/church/verse-of-day/${editingVerse.id}`
-        : '/api/church/verse-of-day'
+        ? apiUrl(`/api/church/verse-of-day/${editingVerse.id}`)
+        : apiUrl('/api/church/verse-of-day')
       
       const method = editingVerse ? 'PUT' : 'POST'
 

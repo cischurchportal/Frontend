@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiUrl } from '../../utils/api'
 
 function ServiceTimingManager() {
   const [services, setServices] = useState([])
@@ -26,7 +27,7 @@ function ServiceTimingManager() {
 
   const fetchServices = async () => {
     try {
-      const response = await fetch('/api/church/service-timings')
+      const response = await fetch(apiUrl('/api/church/service-timings'))
       const data = await response.json()
       if (data.success) {
         setServices(data.data.services)
@@ -49,8 +50,8 @@ function ServiceTimingManager() {
       }
 
       const url = editingService 
-        ? `/api/church/service-timings/${editingService.id}`
-        : '/api/church/service-timings'
+        ? apiUrl(`/api/church/service-timings/${editingService.id}`)
+        : apiUrl('/api/church/service-timings')
       
       const method = editingService ? 'PUT' : 'POST'
 
@@ -97,7 +98,7 @@ function ServiceTimingManager() {
     if (!confirm('Are you sure you want to delete this service?')) return
 
     try {
-      const response = await fetch(`/api/church/service-timings/${serviceId}`, {
+      const response = await fetch(apiUrl(`/api/church/service-timings/${serviceId}`), {
         method: 'DELETE'
       })
 

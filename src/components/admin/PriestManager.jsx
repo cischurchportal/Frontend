@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { compressImage } from '../../utils/compressImage'
+import { apiUrl } from '../../utils/api'
 
 function PriestManager() {
   const [priests, setPriests] = useState([])
@@ -28,7 +29,7 @@ function PriestManager() {
 
   const fetchPriests = async () => {
     try {
-      const response = await fetch('/api/church/priests')
+      const response = await fetch(apiUrl('/api/church/priests'))
       const data = await response.json()
       if (data.success) {
         setPriests(data.data.priests)
@@ -56,7 +57,7 @@ function PriestManager() {
         const imageFormData = new FormData()
         imageFormData.append('file', compressed)
 
-        const uploadResponse = await fetch('/api/upload/', {
+        const uploadResponse = await fetch(apiUrl('/api/upload/'), {
           method: 'POST',
           body: imageFormData
         })
@@ -83,8 +84,8 @@ function PriestManager() {
       delete priestData.imageFile
 
       const url = editingPriest 
-        ? `/api/church/priests/${editingPriest.id}`
-        : '/api/church/priests'
+        ? apiUrl(`/api/church/priests/${editingPriest.id}`)
+        : apiUrl('/api/church/priests')
       
       const method = editingPriest ? 'PUT' : 'POST'
 
@@ -133,7 +134,7 @@ function PriestManager() {
     if (!confirm('Are you sure you want to delete this priest?')) return
 
     try {
-      const response = await fetch(`/api/church/priests/${priestId}`, {
+      const response = await fetch(apiUrl(`/api/church/priests/${priestId}`), {
         method: 'DELETE'
       })
 
