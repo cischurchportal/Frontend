@@ -7,11 +7,10 @@ function VerseOfDay({ verse }) {
     <section style={{
       background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
       borderRadius: '24px',
-      padding: '50px 40px',
+      padding: 'clamp(24px, 4vw, 50px) clamp(20px, 4vw, 40px)',
       boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
       border: '3px solid',
       borderImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1',
-      borderRadius: '24px',
       position: 'relative',
       overflow: 'hidden'
     }}>
@@ -34,7 +33,9 @@ function VerseOfDay({ verse }) {
         gap: '15px',
         marginBottom: '30px',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        flexWrap: 'wrap',
+        textAlign: 'center'
       }}>
         <div style={{
           width: '60px',
@@ -51,7 +52,7 @@ function VerseOfDay({ verse }) {
           📖
         </div>
         <h2 style={{ 
-          fontSize: '2.2rem',
+          fontSize: 'clamp(1.4rem, 4vw, 2.2rem)',
           fontWeight: '800',
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           WebkitBackgroundClip: 'text',
@@ -64,7 +65,7 @@ function VerseOfDay({ verse }) {
       </div>
       
       <blockquote style={{
-        fontSize: '1.5rem',
+        fontSize: 'clamp(1.1rem, 3vw, 1.5rem)',
         fontStyle: 'italic',
         color: '#2c3e50',
         textAlign: 'center',
@@ -73,14 +74,14 @@ function VerseOfDay({ verse }) {
         position: 'relative',
         zIndex: 1,
         fontWeight: '500',
-        padding: '0 40px'
+        padding: '0 20px'
       }}>
         <span style={{
-          fontSize: '4rem',
+          fontSize: 'clamp(2rem, 6vw, 4rem)',
           color: '#667eea',
           position: 'absolute',
           left: '0',
-          top: '-20px',
+          top: '-10px',
           opacity: 0.2,
           fontFamily: 'Georgia, serif'
         }}>
@@ -88,11 +89,11 @@ function VerseOfDay({ verse }) {
         </span>
         {verse.verse}
         <span style={{
-          fontSize: '4rem',
+          fontSize: 'clamp(2rem, 6vw, 4rem)',
           color: '#764ba2',
           position: 'absolute',
           right: '0',
-          bottom: '-30px',
+          bottom: '-20px',
           opacity: 0.2,
           fontFamily: 'Georgia, serif'
         }}>

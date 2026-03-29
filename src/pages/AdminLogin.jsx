@@ -13,7 +13,6 @@ function AdminLogin() {
   const [messageType, setMessageType] = useState('error')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -107,7 +106,7 @@ function AdminLogin() {
         <div className="fade-in-up" style={{
           maxWidth: '480px',
           width: '100%',
-          padding: '50px 45px',
+          padding: 'clamp(28px, 6vw, 50px) clamp(20px, 6vw, 45px)',
           backgroundColor: 'white',
           borderRadius: '24px',
           boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
@@ -327,28 +326,17 @@ function AdminLogin() {
           </div>
           
           <div style={{ 
-            padding: '20px', 
+            padding: '16px 20px', 
             background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
             borderRadius: '12px',
             fontSize: '0.85rem',
-            color: '#666',
-            lineHeight: '1.6'
+            color: '#888',
+            lineHeight: '1.6',
+            textAlign: 'center',
+            border: '1px solid rgba(102, 126, 234, 0.12)'
           }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: '10px',
-              color: '#667eea',
-              fontWeight: '700'
-            }}>
-              <span>ℹ️</span>
-              <span>Default Credentials</span>
-            </div>
-            <div style={{ paddingLeft: '28px' }}>
-              <strong>Username:</strong> admin<br />
-              <strong>Password:</strong> password123
-            </div>
+            <span style={{ fontSize: '1rem' }}>🔒</span>{' '}
+            Contact your administrator for login credentials.
           </div>
         </div>
       </div>

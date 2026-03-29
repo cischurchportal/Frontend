@@ -17,18 +17,26 @@ import { apiUrl } from '../utils/api'
 function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
   const [adminUser, setAdminUser] = useState(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900)
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Check if admin is logged in
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 900)
+      if (window.innerWidth > 900) setSidebarOpen(false)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
     const isLoggedIn = localStorage.getItem('isAdminLoggedIn')
     const user = localStorage.getItem('adminUser')
-    
     if (!isLoggedIn || !user) {
       navigate('/admin')
       return
     }
-    
     setAdminUser(JSON.parse(user))
   }, [navigate])
 
@@ -62,7 +70,7 @@ function AdminDashboard() {
       <header style={{
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
-        padding: '20px 0',
+        padding: '15px 0',
         boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
         position: 'sticky',
         top: 0,
@@ -71,98 +79,105 @@ function AdminDashboard() {
         <div className="container" style={{
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          gap: '10px'
         }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '15px'
-          }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Mobile sidebar toggle */}
+            {isMobile && (
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  border: 'none',
+                  color: 'white',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '1.2rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}
+              >
+                ☰
+              </button>
+            )}
             <div style={{
-              width: '50px',
-              height: '50px',
+              width: '44px',
+              height: '44px',
               background: 'rgba(255,255,255,0.2)',
               borderRadius: '12px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.8rem',
-              backdropFilter: 'blur(10px)'
+              fontSize: '1.5rem',
+              backdropFilter: 'blur(10px)',
+              flexShrink: 0
             }}>
               🏛️
             </div>
             <div>
               <h1 style={{ 
                 margin: 0, 
-                fontSize: '1.6rem',
-                fontWeight: '800',
-                letterSpacing: '0.5px'
+                fontSize: isMobile ? '1.1rem' : '1.6rem',
+                fontWeight: '800'
               }}>
-                Church Admin Dashboard
+                {isMobile ? 'Admin' : 'Church Admin Dashboard'}
               </h1>
-              <p style={{
-                margin: 0,
-                fontSize: '0.85rem',
-                opacity: 0.9,
-                fontWeight: '500'
-              }}>
-                Manage your church content and settings
-              </p>
+              {!isMobile && (
+                <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.9, fontWeight: '500' }}>
+                  Manage your church content and settings
+                </p>
+              )}
             </div>
           </div>
           
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: '20px',
+            gap: isMobile ? '10px' : '20px',
             background: 'rgba(255,255,255,0.15)',
-            padding: '12px 20px',
+            padding: isMobile ? '8px 12px' : '12px 20px',
             borderRadius: '12px',
             backdropFilter: 'blur(10px)'
           }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px'
-            }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                background: 'rgba(255,255,255,0.2)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.3rem'
-              }}>
-                👤
-              </div>
-              <div>
-                <div style={{ 
-                  fontSize: '0.75rem',
-                  opacity: 0.9,
-                  fontWeight: '600'
+            {!isMobile && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '36px',
+                  height: '36px',
+                  background: 'rgba(255,255,255,0.2)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.2rem'
                 }}>
-                  ADMIN
+                  👤
                 </div>
-                <div style={{ fontWeight: '700' }}>
-                  {adminUser.first_name}
+                <div>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.9, fontWeight: '600' }}>ADMIN</div>
+                  <div style={{ fontWeight: '700', fontSize: '0.95rem' }}>{adminUser.first_name}</div>
                 </div>
               </div>
-            </div>
+            )}
             <button
               onClick={handleLogout}
               style={{
                 background: 'rgba(255,255,255,0.2)',
                 color: 'white',
                 border: 'none',
-                padding: '10px 20px',
+                padding: isMobile ? '8px 12px' : '10px 20px',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontWeight: '700',
-                fontSize: '0.9rem',
+                fontSize: '0.85rem',
                 transition: 'all 0.3s ease',
-                backdropFilter: 'blur(10px)'
+                backdropFilter: 'blur(10px)',
+                whiteSpace: 'nowrap'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(255,255,255,0.3)'
@@ -173,90 +188,117 @@ function AdminDashboard() {
                 e.currentTarget.style.transform = 'translateY(0)'
               }}
             >
-              🚪 Logout
+              🚪 {isMobile ? '' : 'Logout'}
             </button>
           </div>
         </div>
       </header>
 
-      <div className="container" style={{ padding: '40px 20px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '30px' }}>
-          {/* Sidebar */}
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '20px',
-            padding: '25px',
-            height: 'fit-content',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-            position: 'sticky',
-            top: '120px'
-          }}>
-            <h3 style={{ 
-              marginBottom: '25px', 
-              color: '#333',
-              fontSize: '1.2rem',
-              fontWeight: '800',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px'
-            }}>
-              <span>🧭</span>
-              <span>Navigation</span>
-            </h3>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {tabs.map((tab, index) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+      <div className="container" style={{ padding: isMobile ? '20px 15px' : '40px 20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '260px 1fr', gap: '20px' }}>
+          {/* Sidebar - mobile: overlay drawer, desktop: sticky column */}
+          {(!isMobile || sidebarOpen) && (
+            <>
+              {/* Mobile overlay backdrop */}
+              {isMobile && sidebarOpen && (
+                <div
+                  onClick={() => setSidebarOpen(false)}
                   style={{
-                    background: activeTab === tab.id 
-                      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
-                      : 'transparent',
-                    color: activeTab === tab.id ? 'white' : '#333',
-                    border: 'none',
-                    padding: '14px 18px',
-                    borderRadius: '12px',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    fontSize: '0.95rem',
-                    fontWeight: '600',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    boxShadow: activeTab === tab.id 
-                      ? '0 4px 12px rgba(102, 126, 234, 0.3)' 
-                      : 'none',
-                    width: '100%'
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'rgba(0,0,0,0.4)',
+                    zIndex: 200
                   }}
-                  onMouseEnter={(e) => {
-                    if (activeTab !== tab.id) {
-                      e.currentTarget.style.background = 'rgba(102, 126, 234, 0.08)'
-                      e.currentTarget.style.transform = 'translateX(5px)'
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (activeTab !== tab.id) {
-                      e.currentTarget.style.background = 'transparent'
-                      e.currentTarget.style.transform = 'translateX(0)'
-                    }
-                  }}
-                >
-                  <span style={{ fontSize: '1.2rem' }}>{tab.icon}</span>
-                  <span>{tab.label.replace(tab.icon + ' ', '')}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+                />
+              )}
+              <div style={{
+                backgroundColor: 'white',
+                borderRadius: '20px',
+                padding: '20px',
+                height: 'fit-content',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+                position: isMobile ? 'fixed' : 'sticky',
+                top: isMobile ? '0' : '100px',
+                left: isMobile ? '0' : 'auto',
+                bottom: isMobile ? '0' : 'auto',
+                width: isMobile ? '260px' : 'auto',
+                zIndex: isMobile ? 300 : 'auto',
+                overflowY: isMobile ? 'auto' : 'visible'
+              }}>
+                <h3 style={{ 
+                  marginBottom: '20px', 
+                  color: '#333',
+                  fontSize: '1.1rem',
+                  fontWeight: '800',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <span>🧭</span>
+                  <span>Navigation</span>
+                  {isMobile && (
+                    <button
+                      onClick={() => setSidebarOpen(false)}
+                      style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => { setActiveTab(tab.id); setSidebarOpen(false) }}
+                      style={{
+                        background: activeTab === tab.id 
+                          ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+                          : 'transparent',
+                        color: activeTab === tab.id ? 'white' : '#333',
+                        border: 'none',
+                        padding: '12px 16px',
+                        borderRadius: '12px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        fontSize: '0.9rem',
+                        fontWeight: '600',
+                        transition: 'all 0.3s ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        boxShadow: activeTab === tab.id ? '0 4px 12px rgba(102, 126, 234, 0.3)' : 'none',
+                        width: '100%'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (activeTab !== tab.id) {
+                          e.currentTarget.style.background = 'rgba(102, 126, 234, 0.08)'
+                          e.currentTarget.style.transform = 'translateX(4px)'
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (activeTab !== tab.id) {
+                          e.currentTarget.style.background = 'transparent'
+                          e.currentTarget.style.transform = 'translateX(0)'
+                        }
+                      }}
+                    >
+                      <span style={{ fontSize: '1.1rem' }}>{tab.icon}</span>
+                      <span>{tab.label.replace(tab.icon + ' ', '')}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Main Content */}
           <div className="fade-in-up" style={{
             backgroundColor: 'white',
             borderRadius: '20px',
-            padding: '40px',
+            padding: isMobile ? '20px' : '40px',
             boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-            minHeight: '600px'
+            minHeight: '500px'
           }}>
             {activeTab === 'overview' && <OverviewTab />}
             {activeTab === 'church' && <ChurchSettingsManager />}

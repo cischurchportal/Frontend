@@ -25,7 +25,7 @@ function Announcements({ announcements }) {
     <section style={{
       backgroundColor: 'white',
       borderRadius: '20px',
-      padding: '40px',
+      padding: 'clamp(20px, 4vw, 40px)',
       boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
       position: 'relative',
       overflow: 'hidden'
@@ -63,7 +63,7 @@ function Announcements({ announcements }) {
           📢
         </div>
         <h2 style={{ 
-          fontSize: '2rem',
+          fontSize: 'clamp(1.4rem, 4vw, 2rem)',
           fontWeight: '800',
           color: '#2c3e50',
           margin: 0
@@ -82,16 +82,24 @@ function Announcements({ announcements }) {
         {announcements.map((announcement, index) => (
           <div 
             key={announcement.id} 
-            className="card-hover"
             style={{
-              border: `3px solid ${getPriorityColor(announcement.priority)}`,
+              border: `2px solid ${getPriorityColor(announcement.priority)}`,
               borderRadius: '16px',
-              padding: '25px',
-              background: `linear-gradient(135deg, ${getPriorityColor(announcement.priority)}05 0%, ${getPriorityColor(announcement.priority)}10 100%)`,
+              padding: '22px',
+              background: `linear-gradient(135deg, ${getPriorityColor(announcement.priority)}05 0%, ${getPriorityColor(announcement.priority)}08 100%)`,
               position: 'relative',
               overflow: 'hidden',
               animation: `fadeInUp 0.5s ease forwards ${index * 0.1}s`,
-              opacity: 0
+              opacity: 0,
+              transition: 'transform 0.25s ease, box-shadow 0.25s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-3px)'
+              e.currentTarget.style.boxShadow = `0 8px 24px ${getPriorityColor(announcement.priority)}25`
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = 'none'
             }}
           >
             <div style={{
@@ -140,7 +148,7 @@ function Announcements({ announcements }) {
                   <h3 style={{
                     color: '#2c3e50',
                     margin: 0,
-                    fontSize: '1.3rem',
+                    fontSize: 'clamp(1rem, 3vw, 1.3rem)',
                     fontWeight: '700'
                   }}>
                     {announcement.title}

@@ -9,9 +9,13 @@ function About() {
   const [aboutData, setAboutData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
     fetchAboutData()
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   const fetchAboutData = async () => {
@@ -44,26 +48,23 @@ function About() {
       <div style={{
         background: 'linear-gradient(135deg, #00a8e8 0%, #0077b6 100%)',
         color: 'white',
-        padding: '12px 0',
-        fontSize: '0.9rem',
+        padding: '10px 0',
+        fontSize: '0.85rem',
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
         <div className="container" style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '15px'
+          justifyContent: 'center',
+          alignItems: 'center'
         }}>
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             gap: '8px',
-            fontWeight: '600',
-            letterSpacing: '0.5px'
+            fontWeight: '600'
           }}>
-            <span style={{ fontSize: '1.2rem' }}>✝️</span>
-            <span>DEAR BELOVED, WELCOME TO GOD'S HOUSE!</span>
+            <span>✝️</span>
+            <span>{isMobile ? "WELCOME TO GOD'S HOUSE!" : "DEAR BELOVED, WELCOME TO GOD'S HOUSE!"}</span>
           </div>
         </div>
       </div>
@@ -73,7 +74,7 @@ function About() {
       {/* Hero Section */}
       <div style={{
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        padding: '80px 0',
+        padding: isMobile ? '50px 0' : '80px 0',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -88,33 +89,25 @@ function About() {
           animation: 'float 6s ease-in-out infinite'
         }} />
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-          <div className="fade-in-up" style={{
-            textAlign: 'center',
-            color: 'white'
-          }}>
-            <div style={{ 
-              fontSize: '4rem', 
-              marginBottom: '20px',
-              animation: 'scaleIn 0.8s ease forwards'
-            }}>
-              📖
-            </div>
+          <div className="fade-in-up" style={{ textAlign: 'center', color: 'white' }}>
+            <div style={{ fontSize: isMobile ? '2.5rem' : '4rem', marginBottom: '15px' }}>📖</div>
             <h1 style={{ 
-              fontSize: '3.5rem',
+              fontSize: isMobile ? '2rem' : '3.5rem',
               fontWeight: '800',
               marginBottom: '15px',
               textShadow: '0 4px 12px rgba(0,0,0,0.3)',
-              letterSpacing: '1px'
+              letterSpacing: isMobile ? '0' : '1px',
+              padding: isMobile ? '0 10px' : '0'
             }}>
               {aboutData?.title || 'About Our Church'}
             </h1>
             <div style={{ 
               display: 'flex', 
               gap: '12px', 
-              fontSize: '1.1rem',
+              fontSize: '1rem',
               alignItems: 'center',
               justifyContent: 'center',
-              marginTop: '20px'
+              marginTop: '15px'
             }}>
               <span style={{ opacity: 0.9 }}>HOME</span>
               <span style={{ fontSize: '1.5rem' }}>›</span>
@@ -124,17 +117,17 @@ function About() {
         </div>
       </div>
 
-      <div className="container" style={{ padding: '80px 20px' }}>
+      <div className="container" style={{ padding: isMobile ? '30px 15px' : '80px 20px' }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '1.5fr 1fr',
-          gap: '50px',
+          gridTemplateColumns: isMobile ? '1fr' : '1.5fr 1fr',
+          gap: isMobile ? '30px' : '50px',
           alignItems: 'start'
         }}>
           {/* History Text - Left Side */}
           <div className="fade-in-up" style={{
             backgroundColor: 'white',
-            padding: '50px',
+            padding: isMobile ? '25px' : '50px',
             borderRadius: '20px',
             boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
             position: 'relative',
@@ -177,7 +170,7 @@ function About() {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
-                fontSize: '2.2rem',
+                fontSize: 'clamp(1.4rem, 4vw, 2.2rem)',
                 fontWeight: '800',
                 margin: 0
               }}>
@@ -207,7 +200,6 @@ function About() {
               aboutData.images.map((image, index) => (
                 <div
                   key={index}
-                  className="card-hover"
                   style={{
                     backgroundColor: 'white',
                     borderRadius: '16px',
@@ -216,7 +208,20 @@ function About() {
                     aspectRatio: '1',
                     gridColumn: index === 0 ? 'span 2' : 'span 1',
                     cursor: 'pointer',
-                    position: 'relative'
+                    position: 'relative',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)'
+                    e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.14)'
+                    e.currentTarget.querySelector('img').style.transform = 'scale(1.08)'
+                    e.currentTarget.querySelector('.img-overlay').style.opacity = '1'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)'
+                    e.currentTarget.querySelector('img').style.transform = 'scale(1)'
+                    e.currentTarget.querySelector('.img-overlay').style.opacity = '0'
                   }}
                 >
                   <img
@@ -226,30 +231,24 @@ function About() {
                       width: '100%',
                       height: '100%',
                       objectFit: 'cover',
-                      transition: 'transform 0.5s ease'
+                      transition: 'transform 0.5s ease',
+                      display: 'block'
                     }}
-                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
-                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
                     onError={(e) => {
                       e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23ddd" width="400" height="300"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3EChurch Image%3C/text%3E%3C/svg%3E'
                     }}
                   />
-                  <div style={{
+                  <div className="img-overlay" style={{
                     position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                    bottom: 0, left: 0, right: 0,
+                    background: 'linear-gradient(transparent, rgba(0,0,0,0.65))',
                     padding: '30px 15px 15px',
                     color: 'white',
                     fontSize: '0.9rem',
                     fontWeight: '600',
                     opacity: 0,
                     transition: 'opacity 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                  onMouseLeave={(e) => e.currentTarget.style.opacity = '0'}
-                  >
+                  }}>
                     Church Image {index + 1}
                   </div>
                 </div>
@@ -274,14 +273,14 @@ function About() {
 
         {/* Additional Info Section */}
         <div className="fade-in-up" style={{
-          marginTop: '60px',
+          marginTop: '40px',
           background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-          padding: '50px',
+          padding: isMobile ? '30px 20px' : '50px',
           borderRadius: '20px',
           textAlign: 'center'
         }}>
           <h3 style={{
-            fontSize: '2rem',
+            fontSize: 'clamp(1.4rem, 4vw, 2rem)',
             fontWeight: '700',
             marginBottom: '20px',
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
